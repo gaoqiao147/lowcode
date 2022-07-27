@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.freesoft.mapper.ApiHeaderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.freesoft.model.ApiHeaderDO">
+        <id column="id" property="id" />
+        <result column="api_id" property="apiId" />
+        <result column="key" property="key" />
+        <result column="default_value" property="defaultValue" />
+        <result column="description" property="description" />
+        <result column="sort" property="sort" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, api_id, key, default_value, description, sort
+    </sql>
+
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.freesoft.mapper.ApiLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.freesoft.model.ApiLogDO">
+        <id column="id" property="id" />
+        <result column="visit_ip" property="visitIp" />
+        <result column="mfr_id" property="mfrId" />
+        <result column="mfr_name" property="mfrName" />
+        <result column="method" property="method" />
+        <result column="api_id" property="apiId" />
+        <result column="api_name" property="apiName" />
+        <result column="is_pass" property="isPass" />
+        <result column="enter_header" property="enterHeader" />
+        <result column="enter_param" property="enterParam" />
+        <result column="result_body" property="resultBody" />
+        <result column="created_by" property="createdBy" />
+        <result column="created_name" property="createdName" />
+        <result column="created_date" property="createdDate" />
+        <result column="last_modified_by" property="lastModifiedBy" />
+        <result column="last_modified_name" property="lastModifiedName" />
+        <result column="last_modified_date" property="lastModifiedDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, visit_ip, mfr_id, mfr_name, method, api_id, api_name, is_pass, enter_header, enter_param, result_body, created_by, created_name, created_date, last_modified_by, last_modified_name, last_modified_date
+    </sql>
+
+</mapper>
