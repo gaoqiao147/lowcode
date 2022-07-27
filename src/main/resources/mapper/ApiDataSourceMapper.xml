@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.freesoft.mapper.ApiDataSourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.freesoft.model.ApiDataSourceDO">
+        <id column="id" property="id" />
+        <result column="type" property="type" />
+        <result column="name" property="name" />
+        <result column="url" property="url" />
+        <result column="host" property="host" />
+        <result column="port" property="port" />
+        <result column="data_base" property="dataBase" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="description" property="description" />
+        <result column="created_by" property="createdBy" />
+        <result column="created_name" property="createdName" />
+        <result column="created_date" property="createdDate" />
+        <result column="last_modified_by" property="lastModifiedBy" />
+        <result column="last_modified_name" property="lastModifiedName" />
+        <result column="last_modified_date" property="lastModifiedDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, type, name, url, host, port, data_base, username, password, description, created_by, created_name, created_date, last_modified_by, last_modified_name, last_modified_date
+    </sql>
+
+</mapper>
