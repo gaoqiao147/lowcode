@@ -1,13 +1,16 @@
 package com.freesoft.common.method;
 
 import com.freesoft.service.impl.RestTemplateToInterface;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
 /**
  * @author zhouwei
  */
-public class RequestMethod {
+@Service
+public class RequestMethods {
+
     @Resource
     RestTemplateToInterface rt;
 

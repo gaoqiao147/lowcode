@@ -2,7 +2,7 @@ package com.freesoft.controller;
 
 import com.freesoft.common.enums.MethodEnums;
 import com.freesoft.common.enums.ResultStatusEnums;
-import com.freesoft.common.method.RequestMethod;
+import com.freesoft.common.method.RequestMethods;
 import com.freesoft.common.result.ResponseResult;
 import com.freesoft.vo.RequestVO;
 import io.swagger.annotations.Api;
@@ -29,7 +29,7 @@ import javax.annotation.Resource;
 @RequestMapping("/api-main")
 public class ApiMainController {
     @Resource
-    private RequestMethod requestMethod;
+    RequestMethods requestMethod;
 
     @RequestMapping("/url")
     @ApiOperation(value = "发起请求", httpMethod = "GET")
