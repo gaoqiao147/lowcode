@@ -3,12 +3,11 @@ package com.freesoft.config;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.freesoft.common.method.SaveLogMethods;
 import com.freesoft.mapper.ApiLogMapper;
 import com.freesoft.model.ApiLogDO;
-import com.freesoft.vo.LogVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -20,6 +19,7 @@ import java.util.*;
 
 /**
  * 获取http请求内容
+ *
  * @author
  */
 public class LoggableDispatcherServlet extends DispatcherServlet {
@@ -28,6 +28,7 @@ public class LoggableDispatcherServlet extends DispatcherServlet {
 
     private static final Logger logger = LoggerFactory.getLogger("HttpLogger");
     private static final ObjectMapper mapper = new ObjectMapper();
+
     @Override
     protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
@@ -42,7 +43,7 @@ public class LoggableDispatcherServlet extends DispatcherServlet {
         try {
             super.doDispatch(requestWrapper, responseWrapper);
         } finally {
-            if("GET".equals(method)) {
+            if ("GET".equals(method)) {
                 rootNode.set("request", mapper.valueToTree(requestWrapper.getParameterMap()));
             } else {
                 JsonNode newNode = mapper.readTree(requestWrapper.getContentAsByteArray());
@@ -53,9 +54,10 @@ public class LoggableDispatcherServlet extends DispatcherServlet {
             rootNode.set("response", newNode);
             responseWrapper.copyBodyToResponse();
             rootNode.set("responseHeaders", mapper.valueToTree(getResponsetHeaders(responseWrapper)));
+            //将获取的日志信息存入数据库
             ApiLogDO apiLog = new ApiLogDO();
             Random random = new Random();
-            int id = random.nextInt(10000);
+            int id = random.nextInt(100000);
             String id_str = String.valueOf(id);
             apiLog.setId(id_str);
             apiLog.setMethod(rootNode.get("method").toString());
@@ -63,8 +65,8 @@ public class LoggableDispatcherServlet extends DispatcherServlet {
             apiLog.setVisitIp(rootNode.get("clientIp").toString());
             apiLog.setEnterHeader(rootNode.get("responseHeaders").toString());
             apiLog.setResultBody(rootNode.get("response").toString());
+            apiLog.setIsPass(rootNode.get("status").toString());
             apiLogMapper.save(apiLog);
-            logger.info(rootNode.toString());
         }
     }
 
@@ -77,6 +79,7 @@ public class LoggableDispatcherServlet extends DispatcherServlet {
         }
         return headers;
     }
+
     private Map<String, Object> getResponsetHeaders(ContentCachingResponseWrapper response) {
         Map<String, Object> headers = new HashMap<>();
         Collection<String> headerNames = response.getHeaderNames();

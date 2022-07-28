@@ -21,5 +21,13 @@
     <sql id="Base_Column_List">
         id, api_id, key, default_value, description, required, data_type, validate_type, error, expression, sort
     </sql>
+    <insert id="saveApiParams" parameterType="java.util.List">
+        insert into api_parameter(id, api_id, `key`, default_value, description, required, data_type, validate_type,
+        `error`, `expression`, `sort`) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.apiId}, #{item.key}, #{item.defaultValue}, #{item.description}, #{item.required},
+            #{item.dataType}, #{item.validateType}, #{item.error}, #{item.expression}, #{item.sort})
+        </foreach>
+    </insert>
 
 </mapper>

@@ -30,14 +30,14 @@ public class ApiParameterDO implements Serializable {
      * 主键id
      */
     @TableId(value = "id", type = IdType.AUTO)
-    private String id;
+    private Integer id;
 
     /**
      * 通过接口id查询请求头
      * 接口id
      */
     @NotNull(message = "接口id不能为空")
-    private String apiId;
+    private Integer apiId;
 
     /**
      * 参数名

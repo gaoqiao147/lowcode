@@ -12,5 +12,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2022-07-26
  */
 public interface ApiMainMapper extends BaseMapper<ApiMainDO> {
+    /**
+     * 新增接口
+     *
+     * @param apiMain
+     * @return int
+     * @author mingHang
+     * @date 2022/2/24 20:30
+     */
+    int insertInterface(ApiMainDO apiMain);
 
 }
