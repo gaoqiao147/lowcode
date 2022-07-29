@@ -34,4 +34,7 @@
         SELECT am.path ,am.method, ap.`key`,ap.api_id FROM api_main am , api_parameter ap
         WHERE am.id = ap.api_id
     </select>
+    <select id="getAllApiById" resultType="com.freesoft.vo.RequestParamsVO">
+
+    </select>
 </mapper>

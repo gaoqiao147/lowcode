@@ -33,5 +33,12 @@ public interface ApiMainMapper extends BaseMapper<ApiMainDO> {
      */
     List<RequestParamsVO> getAllApi();
 
+    /**
+     * 通过id查询一条接口信息
+     *
+     * @param id
+     * @return
+     */
+    RequestParamsVO getAllApiById(Integer id);
 
 }

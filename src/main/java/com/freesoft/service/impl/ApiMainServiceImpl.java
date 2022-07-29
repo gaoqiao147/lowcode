@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -69,7 +70,8 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
                 }
             }
         }
-        System.out.println(list);
-        return list;
+        LinkedHashSet<RequestUriVO> hashSet = new LinkedHashSet<>(list);
+        ArrayList<RequestUriVO> listWithoutDuplicates = new ArrayList<RequestUriVO>(hashSet);
+        return listWithoutDuplicates;
     }
 }

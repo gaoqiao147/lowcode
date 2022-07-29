@@ -14,6 +14,7 @@ import java.util.Map;
 public class RequestMethods {
     @Resource
     RestTemplateToInterface rt;
+
     final static String GRT_METHOD = "GET";
     final static String POST_METHOD = "POST";
 

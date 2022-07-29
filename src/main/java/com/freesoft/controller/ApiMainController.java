@@ -8,6 +8,7 @@ import com.freesoft.mapper.ApiLogMapper;
 import com.freesoft.mapper.ApiMainMapper;
 import com.freesoft.model.ApiMainDO;
 import com.freesoft.service.ApiMainService;
+import com.freesoft.vo.ParamsVO;
 import com.freesoft.vo.RequestUriVO;
 import com.freesoft.vo.RequestVO;
 import io.swagger.annotations.Api;
@@ -43,12 +44,20 @@ public class ApiMainController {
         String method = requestVO.getMethod();
         String path = requestVO.getPath();
         String token = requestVO.getToken();
+        List<ParamsVO> list = requestVO.getParams();
         //判断参数是否正确,isValidEnumIgnoreCase是判断定义的枚举中是否存在method的字符
         if (!EnumUtils.isValidEnumIgnoreCase(MethodEnums.class, method)) {
             return ResponseResult.builder().code(ResultStatusEnums.FAIL.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).build();
         }
         Map<String, Object> map = new HashMap<>();
-        map.put("data", requestMethod.methodUseGet(token, method, path).toString());
+        if ("GET".equals(method)) {
+            map.put("data", requestMethod.methodUseGet(token, method, path).toString());
+        }
+        if("POST".equals(method)){
+            map.put("data", requestMethod.methodUsePost(token, method, path,list).toString());
+        }
+
+
         return ResponseResult.builder().code(ResultStatusEnums.SUCCESS.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).data(map).build();
     }
 
@@ -68,10 +77,7 @@ public class ApiMainController {
     @ApiOperation(value = "获取所有接口", httpMethod = "GET")
     public ResponseResult getAllApi() {
         List<RequestUriVO> list = apiMainService.getAllApi();
-        LinkedHashSet<RequestUriVO> hashSet = new LinkedHashSet<>(list);
-        ArrayList<RequestUriVO> listWithoutDuplicates = new ArrayList<RequestUriVO>(hashSet);
-        System.out.println(listWithoutDuplicates);
-        return ResponseResult.builder().code(ResultStatusEnums.SUCCESS.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).data(listWithoutDuplicates).build();
+        return ResponseResult.builder().code(ResultStatusEnums.SUCCESS.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).data(list).build();
     }
 }
 
