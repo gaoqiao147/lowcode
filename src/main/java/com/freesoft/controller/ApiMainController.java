@@ -8,6 +8,7 @@ import com.freesoft.mapper.ApiLogMapper;
 import com.freesoft.mapper.ApiMainMapper;
 import com.freesoft.model.ApiMainDO;
 import com.freesoft.service.ApiMainService;
+import com.freesoft.vo.RequestUriVO;
 import com.freesoft.vo.RequestVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -16,8 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -34,11 +34,10 @@ import java.util.Map;
 public class ApiMainController {
     @Resource
     RequestMethods requestMethod;
-
     @Resource
     ApiMainService apiMainService;
 
-    @GetMapping ("/url")
+    @GetMapping("/url")
     @ApiOperation(value = "发起请求", httpMethod = "GET")
     public ResponseResult RequestResult(@RequestBody @Validated RequestVO requestVO) {
         String method = requestVO.getMethod();
@@ -48,15 +47,14 @@ public class ApiMainController {
         if (!EnumUtils.isValidEnumIgnoreCase(MethodEnums.class, method)) {
             return ResponseResult.builder().code(ResultStatusEnums.FAIL.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).build();
         }
-        Map<String,Object> map = new HashMap<>();
-        map.put("data",requestMethod.methodUse(token, method, path).toString());
-        Object data = requestMethod.methodUse(token, method, path);
+        Map<String, Object> map = new HashMap<>();
+        map.put("data", requestMethod.methodUseGet(token, method, path).toString());
         return ResponseResult.builder().code(ResultStatusEnums.SUCCESS.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).data(map).build();
     }
 
     @PostMapping("save-api")
     @ApiOperation(value = "保存接口", httpMethod = "POST")
-    public ResponseResult saveApi(@RequestBody @Validated ApiMainDO apiMainDO){
+    public ResponseResult saveApi(@RequestBody @Validated ApiMainDO apiMainDO) {
         //判断参数是否正确,isValidEnumIgnoreCase是判断定义的枚举中是否存在method的字符
         if (!EnumUtils.isValidEnumIgnoreCase(MethodEnums.class, apiMainDO.getMethod())) {
             return ResponseResult.builder().code(ResultStatusEnums.FAIL.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).build();
@@ -64,7 +62,16 @@ public class ApiMainController {
         int res = apiMainService.saveApi(apiMainDO);
         String data = "成功保存了" + res + "条数据";
         return ResponseResult.builder().code(ResultStatusEnums.SUCCESS.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).data(data).build();
+    }
 
+    @GetMapping("get-all-api")
+    @ApiOperation(value = "获取所有接口", httpMethod = "GET")
+    public ResponseResult getAllApi() {
+        List<RequestUriVO> list = apiMainService.getAllApi();
+        LinkedHashSet<RequestUriVO> hashSet = new LinkedHashSet<>(list);
+        ArrayList<RequestUriVO> listWithoutDuplicates = new ArrayList<RequestUriVO>(hashSet);
+        System.out.println(listWithoutDuplicates);
+        return ResponseResult.builder().code(ResultStatusEnums.SUCCESS.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).data(listWithoutDuplicates).build();
     }
 }
 

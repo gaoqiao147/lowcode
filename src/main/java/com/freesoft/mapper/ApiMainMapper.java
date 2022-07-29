@@ -2,6 +2,10 @@ package com.freesoft.mapper;
 
 import com.freesoft.model.ApiMainDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.freesoft.vo.RequestParamsVO;
+import com.freesoft.vo.RequestUriVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -21,5 +25,13 @@ public interface ApiMainMapper extends BaseMapper<ApiMainDO> {
      * @date 2022/2/24 20:30
      */
     int insertInterface(ApiMainDO apiMain);
+
+    /**
+     * 得到所有接口信息（参数）
+     *
+     * @return
+     */
+    List<RequestParamsVO> getAllApi();
+
 
 }

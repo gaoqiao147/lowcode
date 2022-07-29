@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 【参考资料】
@@ -18,18 +21,6 @@ import javax.annotation.Resource;
 public class RestTemplateToInterface {
     @Resource
     private RestTemplate restTemplate;
-
-    /**
-     * 以get方式请求第三方http接口 getForEntity
-     *
-     * @param url
-     * @return
-     */
-    public Object doGetWith1(String url) {
-        ResponseEntity<Object> responseEntity = restTemplate.getForEntity(url, Object.class);
-        Object obj = responseEntity.getBody();
-        return obj;
-    }
 
     /**
      * 以get方式请求第三方http接口 getForObject
@@ -53,37 +44,14 @@ public class RestTemplateToInterface {
         return body;
     }
 
-    /**
-     * 以post方式请求第三方http接口 postForEntity
-     *
-     * @param url
-     * @return
-     */
-    public String doPostWith1(String url) {
-        Object Object = new Object();
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, Object, String.class);
-        String body = responseEntity.getBody();
-        return body;
-    }
+
 
     /**
-     * 以post方式请求第三方http接口 postForEntity
-     *
-     * @param url
-     * @return
-     */
-    public String doPostWith2(String url) {
-        Object Object = new Object();
-        String body = restTemplate.postForObject(url, Object, String.class);
-        return body;
-    }
-
-    /**
-     * exchange
+     * post
      *
      * @return
      */
-    public String doPost(String url, String _token) {
+    public String doPost(String url, String _token, List list) {
         //header参数
         HttpHeaders headers = new HttpHeaders();
         String token = _token;
@@ -91,6 +59,8 @@ public class RestTemplateToInterface {
         headers.setContentType(MediaType.APPLICATION_JSON);
         //放入body中的json参数
         JSONObject obj = new JSONObject();
+
+
         //组装
         HttpEntity<JSONObject> request = new HttpEntity<>(obj, headers);
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, String.class);

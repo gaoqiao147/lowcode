@@ -30,5 +30,8 @@
         values (#{id}, #{name}, #{method}, #{path}, #{description}, #{state}, #{enable}, #{executeSql}, #{createdBy},
                 #{createdName}, now())
     </insert>
-
+    <select id="getAllApi" resultType="com.freesoft.vo.RequestParamsVO">
+        SELECT am.path ,am.method, ap.`key`,ap.api_id FROM api_main am , api_parameter ap
+        WHERE am.id = ap.api_id
+    </select>
 </mapper>

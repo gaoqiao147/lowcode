@@ -3,6 +3,9 @@ package com.freesoft.service;
 import com.freesoft.model.ApiMainDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.freesoft.model.ApiParameterDO;
+import com.freesoft.vo.RequestUriVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,4 +29,11 @@ public interface ApiMainService extends IService<ApiMainDO> {
      * @param apiMainDO
      */
     void saveApiParams(Integer apiId,ApiMainDO apiMainDO);
+
+    /**
+     * 得到所有的可访问的接口地址
+     *
+     * @return
+     */
+    List<RequestUriVO> getAllApi();
 }
