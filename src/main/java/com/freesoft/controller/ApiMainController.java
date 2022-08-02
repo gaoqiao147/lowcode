@@ -53,11 +53,9 @@ public class ApiMainController {
         if ("GET".equals(method)) {
             map.put("data", requestMethod.methodUseGet(token, method, path).toString());
         }
-        if("POST".equals(method)){
-            map.put("data", requestMethod.methodUsePost(token, method, path,list).toString());
+        if ("POST".equals(method)) {
+            map.put("data", requestMethod.methodUsePost(token, method, path, list).toString());
         }
-
-
         return ResponseResult.builder().code(ResultStatusEnums.SUCCESS.getCode()).message(ResultStatusEnums.SUCCESS.getMessage()).data(map).build();
     }
 

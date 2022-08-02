@@ -4,17 +4,38 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.freesoft.model.ApiHeaderDO">
-        <id column="id" property="id" />
-        <result column="api_id" property="apiId" />
-        <result column="key" property="key" />
-        <result column="default_value" property="defaultValue" />
-        <result column="description" property="description" />
-        <result column="sort" property="sort" />
+        <id column="id" property="id"/>
+        <result column="api_id" property="apiId"/>
+        <result column="key" property="key"/>
+        <result column="default_value" property="defaultValue"/>
+        <result column="description" property="description"/>
+        <result column="sort" property="sort"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, api_id, key, default_value, description, sort
+        id
+        , api_id, key, default_value, description, sort
     </sql>
+    <select id="getAllByApiIdNewVos" resultType="com.freesoft.vo.NewVO">
+        SELECT an.api_id,
+               an.path,
+               an.method,
+               ah.default_value as token,
+               an.`key`         as params,
+               an.data_type     as paramsDataType
+        FROM api_header ah,
+             (
+                 SELECT ap.api_id,
+                        am.method,
+                        am.path,
+                        GROUP_CONCAT(ap.`key` SEPARATOR ',')     `key`,
+                        GROUP_CONCAT(ap.data_type SEPARATOR ',') data_type
+                 FROM api_parameter ap
+                          LEFT JOIN api_main am ON ap.api_id = am.id
+                 GROUP BY api_id
+             ) an
+        WHERE an.api_id = ah.api_id
+    </select>
 
 </mapper>

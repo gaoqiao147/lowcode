@@ -2,6 +2,9 @@ package com.freesoft.service;
 
 import com.freesoft.model.ApiHeaderDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.freesoft.vo.NewVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2022-07-26
  */
 public interface ApiHeaderService extends IService<ApiHeaderDO> {
-
+    /**
+     * @return
+     */
+    List<NewVO> getApi();
 }
