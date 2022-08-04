@@ -4,27 +4,38 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.freesoft.model.ApiDataSourceDO">
-        <id column="id" property="id" />
-        <result column="type" property="type" />
-        <result column="name" property="name" />
-        <result column="url" property="url" />
-        <result column="host" property="host" />
-        <result column="port" property="port" />
-        <result column="data_base" property="dataBase" />
-        <result column="username" property="username" />
-        <result column="password" property="password" />
-        <result column="description" property="description" />
-        <result column="created_by" property="createdBy" />
-        <result column="created_name" property="createdName" />
-        <result column="created_date" property="createdDate" />
-        <result column="last_modified_by" property="lastModifiedBy" />
-        <result column="last_modified_name" property="lastModifiedName" />
-        <result column="last_modified_date" property="lastModifiedDate" />
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="name" property="name"/>
+        <result column="url" property="url"/>
+        <result column="host" property="host"/>
+        <result column="port" property="port"/>
+        <result column="data_base" property="dataBase"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="description" property="description"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_name" property="createdName"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="last_modified_by" property="lastModifiedBy"/>
+        <result column="last_modified_name" property="lastModifiedName"/>
+        <result column="last_modified_date" property="lastModifiedDate"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, type, name, url, host, port, data_base, username, password, description, created_by, created_name, created_date, last_modified_by, last_modified_name, last_modified_date
+        id
+        , type, name, url, host, port, data_base, username, password, description, created_by, created_name, created_date, last_modified_by, last_modified_name, last_modified_date
     </sql>
+    <select id="getTableName" resultType="com.freesoft.vo.TableNameVO">
+        SELECT TB.TABLE_NAME
+        FROM information_schema.`TABLES` TB
+        WHERE TB.TABLE_SCHEMA = 'govern_interface_center'
+    </select>
+    <select id="getColumnName" resultType="com.freesoft.vo.ColumnNameVO">
+        SELECT COLUMN_NAME
+        FROM information_schema.COLUMNS
+        WHERE table_name = #{tableName};
+    </select>
 
 </mapper>

@@ -4,8 +4,6 @@ import com.freesoft.common.enums.MethodEnums;
 import com.freesoft.common.enums.ResultStatusEnums;
 import com.freesoft.common.method.RequestMethods;
 import com.freesoft.common.result.ResponseResult;
-import com.freesoft.mapper.ApiLogMapper;
-import com.freesoft.mapper.ApiMainMapper;
 import com.freesoft.model.ApiMainDO;
 import com.freesoft.service.ApiMainService;
 import com.freesoft.vo.ParamsVO;
@@ -18,7 +16,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>

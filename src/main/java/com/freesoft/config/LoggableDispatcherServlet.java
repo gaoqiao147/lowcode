@@ -57,7 +57,7 @@ public class LoggableDispatcherServlet extends DispatcherServlet {
             //将获取的日志信息存入数据库
             ApiLogDO apiLog = new ApiLogDO();
             Random random = new Random();
-            int id = random.nextInt(100000);
+            int id = random.nextInt(1000);
             String id_str = String.valueOf(id);
             apiLog.setId(id_str);
             apiLog.setMethod(rootNode.get("method").toString());
