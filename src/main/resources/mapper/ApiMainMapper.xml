@@ -30,28 +30,29 @@
         </collection>
     </resultMap>
 
-    
+
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.freesoft.model.ApiMainDO">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="method" property="method" />
-        <result column="path" property="path" />
-        <result column="description" property="description" />
-        <result column="state" property="state" />
-        <result column="enable" property="enable" />
-        <result column="execute_sql" property="executeSql" />
-        <result column="created_by" property="createdBy" />
-        <result column="created_name" property="createdName" />
-        <result column="created_date" property="createdDate" />
-        <result column="last_modified_by" property="lastModifiedBy" />
-        <result column="last_modified_name" property="lastModifiedName" />
-        <result column="last_modified_date" property="lastModifiedDate" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="method" property="method"/>
+        <result column="path" property="path"/>
+        <result column="description" property="description"/>
+        <result column="state" property="state"/>
+        <result column="enable" property="enable"/>
+        <result column="execute_sql" property="executeSql"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="created_name" property="createdName"/>
+        <result column="created_date" property="createdDate"/>
+        <result column="last_modified_by" property="lastModifiedBy"/>
+        <result column="last_modified_name" property="lastModifiedName"/>
+        <result column="last_modified_date" property="lastModifiedDate"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, method, path, description, state, enable, execute_sql, created_by, created_name, created_date, last_modified_by, last_modified_name, last_modified_date
+        id
+        , name, method, path, description, state, enable, execute_sql, created_by, created_name, created_date, last_modified_by, last_modified_name, last_modified_date
     </sql>
     <insert id="insertInterface">
         insert into api_main(id, name, method, path, description, state, enable, execute_sql, created_by, created_name,
@@ -60,7 +61,9 @@
                 #{createdName}, now())
     </insert>
     <select id="getAllApi" resultType="com.freesoft.vo.RequestParamsVO">
-        SELECT am.path ,am.method, ap.`key`,ap.api_id FROM api_main am , api_parameter ap
+        SELECT am.path, am.method, ap.`key`, ap.api_id
+        FROM api_main am,
+             api_parameter ap
         WHERE am.id = ap.api_id
     </select>
     <select id="getAllApiById" resultType="com.freesoft.vo.RequestParamsVO">
@@ -96,5 +99,17 @@
                  inner join api_main_group mg on m.id = mg.api_id and mg.quote = '0'
                  left join api_parameter p on m.id = p.api_id
         where m.state = '0'
+    </select>
+    <select id="getOneByPath" resultType="com.freesoft.model.ApiMainDO">
+        SELECT id,
+               name,
+               method,
+               path,
+               description,
+               state,
+               enable,
+               execute_sql
+        from api_main
+        where path = #{path}
     </select>
 </mapper>

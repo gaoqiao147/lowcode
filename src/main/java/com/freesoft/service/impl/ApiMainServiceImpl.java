@@ -1,9 +1,5 @@
 package com.freesoft.service.impl;
 
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.freesoft.mapper.*;
 import com.freesoft.model.*;
@@ -11,10 +7,8 @@ import com.freesoft.service.ApiMainService;
 import com.freesoft.utils.ApiUtil;
 import com.freesoft.utils.DataSourceNode;
 import com.freesoft.utils.DataSourceUtil;
-import com.freesoft.vo.NewVO;
 import com.freesoft.vo.RequestParamsVO;
 import com.freesoft.vo.RequestUriVO;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -22,7 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -48,8 +41,7 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
     @Lazy
     @Autowired
     ApiUtil apiUtil;
-    @Resource
-    ApiHeaderMapper apiHeaderMapper;
+
 
     /**
      * 项目启动时，对所有接口进行上架
@@ -109,18 +101,18 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
     @Override
     public Object invoke(HttpServletRequest request, Map<String, Object> headers, Map<String, Object> parameters) {
         String method = request.getRequestURI();
-        System.out.println(method);
+        //去除请求地址中的 "/open"
         String url = request.getRequestURI().replace("/open", "");
         Object result = null;
         boolean isPass = false;
         try {
-            List<NewVO> newVO = apiHeaderMapper.getAllByApiIdNewVos();
             ApiMainDO apiMain = new ApiMainDO();
-            apiMain.setMethod(newVO.get(0).getMethod());
-            apiMain.setPath(newVO.get(0).getPath());
-            apiMain.setId(newVO.get(0).getApiId());
-            apiMain.setEnable("0");
-            apiMain.setExecuteSql("SELECT mid,mname FROM movie_information");
+            ApiMainDO apiMain2 = apiMainMapper.getOneByPath(url);
+            apiMain.setMethod(apiMain2.getMethod());
+            apiMain.setPath(apiMain2.getPath());
+            apiMain.setId(apiMain2.getId());
+            apiMain.setEnable(apiMain2.getEnable().toString());
+            apiMain.setExecuteSql(apiMain2.getExecuteSql());
             if ("0".equals(apiMain.getEnable())) {
                 //启用数据源 通过groupId查询分组信息
                 ApiMainGroupDO apiMainGroupDO = apiMainGroupMapper.selectById(apiMain.getId());
@@ -156,46 +148,7 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
      * @date 2022/2/28 13:52
      */
     private Object execute(DataSourceNode dataSourceNode, String executeSql) {
-//        //对sql进行简单处理
-//        List<JSONObject> sqlList = JSON.parseArray(executeSql,JSONObject.class);
-//        int rows = 0;
-//        String content = "";
-//        for (JSONObject obj : sqlList) {
-//            content = obj.getString("content").toUpperCase();
-//            if (content.contains("SELECT")) {
-//                //执行查询
-                return dataSourceNode.getJdbcTemplate().queryForList(executeSql);
-//            } else if (content.contains("INSERT") || content.contains("UPDATE") || content.contains("DELETE")) {
-//                //执行新增/修改/删除
-//                rows += dataSourceNode.getJdbcTemplate().update(content);
-//            }
-//        }
-//        return "操作成功";
-    }
-
-    /**
-     * 参数替换sql脚本
-     *
-     * @param executeSql
-     * @param parameters
-     * @return java.lang.String
-     * @author mingHang
-     * @date 2022/3/10 9:38
-     */
-    private String convertSql(String executeSql, List<ApiParameterDO> apiParameters, Map<String, Object> parameters) {
-        String convertSql = executeSql, value = "";
-        if (null != parameters && parameters.size() > 0) {
-            for (ApiParameterDO apiParameter : apiParameters) {
-                value = parameters.get(apiParameter.getKey()) == null || StringUtils.isBlank(parameters.get(apiParameter.getKey()).toString())
-                        ? "" : parameters.get(apiParameter.getKey()).toString();
-                if ("".equals(convertSql)) {
-                    convertSql = executeSql.replaceAll("#\\{" + apiParameter.getKey() + "}", "'" + value + "'");
-                } else {
-                    convertSql = convertSql.replaceAll("#\\{" + apiParameter.getKey() + "}", "'" + value + "'");
-                }
-            }
-        }
-        return convertSql;
+        return dataSourceNode.getJdbcTemplate().queryForList(executeSql);
     }
 
     /**

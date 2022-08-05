@@ -50,4 +50,6 @@ public interface ApiMainMapper extends BaseMapper<ApiMainDO> {
      */
     List<ApiMainDO> getAll();
 
+    ApiMainDO getOneByPath(String path);
+
 }
