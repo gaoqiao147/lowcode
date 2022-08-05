@@ -1,6 +1,7 @@
 package com.freesoft.common.method;
 
 import com.freesoft.service.impl.RestTemplateToInterface;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * @author zhouwei
  */
-@Service
+@Configuration
 public class RequestMethods {
     @Resource
     RestTemplateToInterface rt;

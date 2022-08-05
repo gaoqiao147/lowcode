@@ -14,7 +14,7 @@ public class GenPathMethods {
          *   http:// ip地址 ： 端口号 / tableName / 接口id
          */
         StringBuilder sbPath = new StringBuilder();
-        sbPath.append(HTTP).append("127.0.0.1:8081/").append(tableName).append("/").append(id);
+        sbPath.append("/").append(tableName).append("/").append(id);
         return sbPath;
     }
 }

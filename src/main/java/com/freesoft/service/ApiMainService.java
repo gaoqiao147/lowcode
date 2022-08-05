@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.freesoft.model.ApiParameterDO;
 import com.freesoft.vo.RequestUriVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -36,4 +38,16 @@ public interface ApiMainService extends IService<ApiMainDO> {
      * @return
      */
     List<RequestUriVO> getAllApi();
+
+    /**
+     * 自定义接口实现
+     *
+     * @param request
+     * @param headers
+     * @param parameters
+     * @return java.lang.Object
+     * @author mingHang
+     * @date 2022/2/28 14:44
+     */
+    Object invoke(HttpServletRequest request, Map<String, Object> headers, Map<String, Object> parameters);
 }

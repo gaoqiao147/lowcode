@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.freesoft.service.ApiMainService;
 import com.freesoft.vo.ParamsVO;
 import com.freesoft.vo.RequestUriVO;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author zhouwei
  */
-@Service
+@Configuration
 public class RestTemplateToInterface {
     @Resource
     private RestTemplate restTemplate;

@@ -41,4 +41,13 @@ public interface ApiMainMapper extends BaseMapper<ApiMainDO> {
      */
     RequestParamsVO getAllApiById(Integer id);
 
+    /**
+     * 查询所有接口
+     *
+     * @return java.util.List<com.freesofts.framework.api.model.ApiMain>
+     * @author mingHang
+     * @date 2022/3/2 17:00
+     */
+    List<ApiMainDO> getAll();
+
 }
