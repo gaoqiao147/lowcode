@@ -60,12 +60,12 @@ public class SplicingSqlMethods {
      */
     public String getOutputParams(List<ParamsVO> outputParams) {
         String params = "";
-        String question = " ? ";
+        String question = "= ? ";
         for (int i = 0; i < outputParams.size(); i++) {
             params += outputParams.get(i).getParams() + question + " and ";
         }
         //删除字符串param_type最后的and和？
-        params = params.substring(0, params.length() - 6);
+        params = params.substring(0, params.length() - 7);
         return params;
     }
 
