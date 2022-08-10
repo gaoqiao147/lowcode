@@ -1,7 +1,5 @@
 package com.freesoft.common.method;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.freesoft.vo.GenerateVO;
 import com.freesoft.vo.ParamsVO;
 import org.springframework.stereotype.Service;
@@ -22,12 +20,19 @@ public class SplicingSqlMethods {
         StringBuilder sbSql = new StringBuilder();
         String DML = getDML(generateVO.getMethod());
         List<ParamsVO> inputParams = generateVO.getInputParamsList();
-        String params = null;
-        for (int i = 0; i < inputParams.size(); i++) {
-            params = getInputParams(inputParams);
-        }
+        List<ParamsVO> outputParams = generateVO.getOutputParamsList();
+        String myWhere = "where";
+        String myspace = " ";
+        String inParams = getInputParams(inputParams);
+        String outParams = getOutputParams(outputParams);
         String tableName = generateVO.getTableName();
-        sbSql.append("").append(DML).append(" ").append(params).append(" ").append("FROM").append(" ").append(tableName);
+        sbSql.append("").append(DML).append(myspace).append(inParams).append(myspace).append("FROM").append(myspace).append(tableName);
+        if ("".equals(outputParams)) {
+            return sbSql;
+        } else {
+            System.out.println(outParams);
+            sbSql.append(myspace).append(myWhere).append(myspace).append(outParams);
+        }
         return sbSql;
     }
 
@@ -44,6 +49,23 @@ public class SplicingSqlMethods {
         }
         //删除字符串param_type最后一个逗号
         params = params.substring(0, params.length() - 1);
+        return params;
+    }
+
+    /**
+     * 将入参转换为一条语句
+     *
+     * @param outputParams
+     * @return
+     */
+    public String getOutputParams(List<ParamsVO> outputParams) {
+        String params = "";
+        String question = " ? ";
+        for (int i = 0; i < outputParams.size(); i++) {
+            params += outputParams.get(i).getParams() + question + " and ";
+        }
+        //删除字符串param_type最后的and和？
+        params = params.substring(0, params.length() - 6);
         return params;
     }
 

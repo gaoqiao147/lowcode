@@ -12,6 +12,8 @@ public class ApiTest {
 
     @Test
     public void test(){
-        System.out.println(apiHeaderService.getApi());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("i").append("love").append("you");
+        System.out.println(stringBuilder);
     }
 }

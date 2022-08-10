@@ -7,6 +7,8 @@ import com.freesoft.service.ApiMainService;
 import com.freesoft.utils.ApiUtil;
 import com.freesoft.utils.DataSourceNode;
 import com.freesoft.utils.DataSourceUtil;
+import com.freesoft.vo.DataTypeVO;
+import com.freesoft.vo.ParamsVO;
 import com.freesoft.vo.RequestParamsVO;
 import com.freesoft.vo.RequestUriVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 /**
  * <p>
@@ -42,7 +48,6 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
     @Autowired
     ApiUtil apiUtil;
 
-
     /**
      * 项目启动时，对所有接口进行上架
      */
@@ -59,8 +64,15 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
         Random random = new Random();
         int id = random.nextInt(10000);
         apiMainDO.setId(id);
+        //保存参数(输出)
         saveApiParams(id, apiMainDO);
-        return apiMainMapper.insertInterface(apiMainDO);
+        //保存参数(输入)
+        saveApiParamsOut(id, apiMainDO);
+        //保存主接口信息
+        int res = apiMainMapper.insertInterface(apiMainDO);
+        //对接口上架
+        apiUtil.registerApi(apiMainDO);
+        return res;
     }
 
     @Override
@@ -71,6 +83,16 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
             apiParameterList.get(i).setApiId(apiId);
         }
         apiParameterMapper.saveApiParams(apiParameterList);
+    }
+
+    @Override
+    public void saveApiParamsOut(Integer apiId, ApiMainDO apiMainDO) {
+        //获取参数List数组
+        List<ApiParams> apiParameterList = apiMainDO.getParametersOut();
+        for (int i = 0; i < apiParameterList.size(); i++) {
+            apiParameterList.get(i).setApiId(apiId);
+        }
+        apiParameterMapper.saveApiParamsOut(apiParameterList);
     }
 
     @Override
@@ -104,7 +126,6 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
         //去除请求地址中的 "/open"
         String url = request.getRequestURI().replace("/open", "");
         Object result = null;
-        boolean isPass = false;
         try {
             ApiMainDO apiMain = new ApiMainDO();
             ApiMainDO apiMain2 = apiMainMapper.getOneByPath(url);
@@ -119,11 +140,19 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
                 ApiGroupDO apiGroup = apiGroupMapper.selectById(apiMainGroupDO.getGroupId());
                 //通过分组信息获取数据源
                 DataSourceNode dataSourceNode = queryDataSource(apiGroup.getDataSourceId());
+                //获取参数信息（要输入的参数，用户填的信息）
+                List<ParamsVO> paramsVOList = apiParameterMapper.paramsList(apiMain.getId());
+                //用户要输出的参数
+                List<ParamsVO> paramsVOList2 = apiParameterMapper.paramsList2(apiMain.getId());
                 //参数替换sql脚本
                 String sql = apiMain.getExecuteSql();
                 //针对该数据源执行sql脚本
-                result = execute(dataSourceNode, sql);
-                isPass = true;
+                if (null != paramsVOList) {
+                    result = execute(dataSourceNode, sql, paramsVOList,paramsVOList2, parameters);
+                } else {
+                    result = execute(dataSourceNode, sql);
+                }
+                System.out.println(result);
                 return result;
             } else if ("1".equals(apiMain.getEnable())) {
                 //不启用数据源
@@ -144,10 +173,28 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
      *
      * @param executeSql
      * @return java.lang.Object
-     * @author mingHang
-     * @date 2022/2/28 13:52
      */
-    private Object execute(DataSourceNode dataSourceNode, String executeSql) {
+    private Object execute(DataSourceNode dataSourceNode, String executeSql, List<ParamsVO> paramsVOList,List<ParamsVO> paramsVOList2, Map<String, Object> parameters) throws SQLException {
+        Connection connection = dataSourceNode.getDataSource().getConnection();
+        PreparedStatement ps = connection.prepareStatement(executeSql);
+//          占位符个数不确定，所以不能直接.所以需要对是否有占位符有几个进行判断
+//          如果有拼接占位符号？，则在循环中对占位符进行赋值
+        for (int i = 0; i < parameters.size(); i++) {
+            ps.setInt(i + 1, (Integer) parameters.get(paramsVOList.get(i).getParams()));
+        }
+        ResultSet rs = ps.executeQuery();
+        Map<String,Object> map = new HashMap<>();
+        //用于循环得到list2数组的值
+        int i = 0;
+        while (rs.next() ) {
+            map.put(paramsVOList2.get(i).getParams(),rs.getString(paramsVOList2.get(i).getParams()));
+            map.put(paramsVOList2.get(i+1).getParams(),rs.getString(paramsVOList2.get(i+1).getParams()));
+            i++;
+        }
+        return map;
+    }
+
+    private Object execute(DataSourceNode dataSourceNode, String executeSql) throws SQLException {
         return dataSourceNode.getJdbcTemplate().queryForList(executeSql);
     }
 

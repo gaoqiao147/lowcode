@@ -4,22 +4,23 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.freesoft.model.ApiParameterDO">
-        <id column="id" property="id" />
-        <result column="api_id" property="apiId" />
-        <result column="key" property="key" />
-        <result column="default_value" property="defaultValue" />
-        <result column="description" property="description" />
-        <result column="required" property="required" />
-        <result column="data_type" property="dataType" />
-        <result column="validate_type" property="validateType" />
-        <result column="error" property="error" />
-        <result column="expression" property="expression" />
-        <result column="sort" property="sort" />
+        <id column="id" property="id"/>
+        <result column="api_id" property="apiId"/>
+        <result column="key" property="key"/>
+        <result column="default_value" property="defaultValue"/>
+        <result column="description" property="description"/>
+        <result column="required" property="required"/>
+        <result column="data_type" property="dataType"/>
+        <result column="validate_type" property="validateType"/>
+        <result column="error" property="error"/>
+        <result column="expression" property="expression"/>
+        <result column="sort" property="sort"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, api_id, key, default_value, description, required, data_type, validate_type, error, expression, sort
+        id
+        , api_id, key, default_value, description, required, data_type, validate_type, error, expression, sort
     </sql>
     <insert id="saveApiParams" parameterType="java.util.List">
         insert into api_parameter(id, api_id, `key`, default_value, description, required, data_type, validate_type,
@@ -29,5 +30,25 @@
             #{item.dataType}, #{item.validateType}, #{item.error}, #{item.expression}, #{item.sort})
         </foreach>
     </insert>
-
+    <insert id="saveApiParamsOut">
+        insert into api_params(id,api_id,`key`,data_type) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (null,#{item.apiId},#{item.key},#{item.dataType})
+        </foreach>
+    </insert>
+    <select id="paramsList" resultType="com.freesoft.vo.ParamsVO">
+        select `key` as params
+        from api_params
+        where api_id = #{apiId}
+    </select>
+    <select id="paramsDataTypeList" resultType="com.freesoft.vo.ParamsVO">
+        select data_type
+        from api_params
+        where api_id = #{apiId}
+    </select>
+    <select id="paramsList2" resultType="com.freesoft.vo.ParamsVO">
+        select `key` as params
+        from api_parameter
+        where api_id = #{apiId}
+    </select>
 </mapper>

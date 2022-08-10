@@ -30,4 +30,6 @@ public class GenerateVO {
      */
     private List<ParamsVO> outputParamsList;
 
+    private List<DataTypeVO> outputDataType;
+
 }

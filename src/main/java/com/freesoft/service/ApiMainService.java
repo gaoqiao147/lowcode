@@ -33,6 +33,13 @@ public interface ApiMainService extends IService<ApiMainDO> {
     void saveApiParams(Integer apiId,ApiMainDO apiMainDO);
 
     /**
+     * 保存接口参数
+     * @param apiId
+     * @param apiMainDO
+     */
+    void saveApiParamsOut(Integer apiId,ApiMainDO apiMainDO);
+
+    /**
      * 得到所有的可访问的接口地址
      *
      * @return

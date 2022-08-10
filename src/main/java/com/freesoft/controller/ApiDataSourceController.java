@@ -4,6 +4,7 @@ import com.freesoft.common.method.GenPathMethods;
 import com.freesoft.common.method.SplicingSqlMethods;
 import com.freesoft.model.ApiMainDO;
 import com.freesoft.model.ApiParameterDO;
+import com.freesoft.model.ApiParams;
 import com.freesoft.service.ApiDataSourceService;
 import com.freesoft.service.ApiMainService;
 import com.freesoft.vo.*;
@@ -52,27 +53,46 @@ public class ApiDataSourceController {
         String str_id = ""+id;
         String path = genPathMethods.genPath(generateVO.getTableName(),str_id).toString();
         //获取参数名
-        List<ParamsVO> paramsVOList = generateVO.getInputParamsList();
+        List<ParamsVO> paramsVOListIn = generateVO.getInputParamsList();
         //获取参数类型
-        List<DataTypeVO> dataTypeList = generateVO.getInputDataType();
+        List<DataTypeVO> dataTypeListIn = generateVO.getInputDataType();
+
+        //获取参数名
+        List<ParamsVO> paramsVOListOut = generateVO.getOutputParamsList();
+        //获取参数类型
+        List<DataTypeVO> dataTypeListOut = generateVO.getOutputDataType();
+
         //判断参数是否为空
-        //循环添加参数入list数组
-        List<ApiParameterDO> list = new ArrayList<>();
-        if (!dataTypeList.isEmpty() && !paramsVOList.isEmpty()) {
-            for (int i = 0; i < paramsVOList.size(); i++) {
+        //循环添加参数入listIn数组
+        List<ApiParameterDO> listIn = new ArrayList<>();
+        if (!dataTypeListIn.isEmpty() && !paramsVOListIn.isEmpty()) {
+            for (int i = 0; i < paramsVOListIn.size(); i++) {
                 ApiParameterDO apiParameterDO = new ApiParameterDO()
-                        .setKey(paramsVOList.get(i).getParams())
-                        .setDataType(dataTypeList.get(i).getParamsDataType())
+                        .setKey(paramsVOListIn.get(i).getParams())
+                        .setDataType(dataTypeListIn.get(i).getParamsDataType())
                         .setApiId(Integer.valueOf(str_id));
-                list.add(apiParameterDO);
+                listIn.add(apiParameterDO);
             }
         }
+        //循环添加参数入list数组
+        List<ApiParams> listOut = new ArrayList<>();
+        if (!dataTypeListOut.isEmpty() && !paramsVOListOut.isEmpty()) {
+            for (int i = 0; i < paramsVOListOut.size(); i++) {
+                ApiParams apiParams = new ApiParams()
+                        .setKey(paramsVOListOut.get(i).getParams())
+                        .setDataType(dataTypeListOut.get(i).getParamsDataType())
+                        .setApiId(Integer.valueOf(str_id));
+                listOut.add(apiParams);
+            }
+        }
+
         ApiMainDO apiMain = new ApiMainDO()
                 .setId(Integer.valueOf(str_id))
                 .setExecuteSql(splicingSqlMethods.splicingSql(generateVO).toString())
                 .setMethod(generateVO.getMethod())
                 .setPath(path)
-                .setParameters(list);
+                .setParameters(listIn)
+                .setParametersOut(listOut);
         int res = apiMainService.saveApi(apiMain);
         return res;
     }

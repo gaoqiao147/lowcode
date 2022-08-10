@@ -113,4 +113,10 @@ public class ApiMainDO implements Serializable {
     @ApiModelProperty(notes = "请求参数")
     private List<ApiParameterDO> parameters =  Lists.newArrayList();
 
+    /**
+     * 请求参数列表
+     */
+    @ApiModelProperty(notes = "输入参数")
+    private List<ApiParams> parametersOut =  Lists.newArrayList();
+
 }

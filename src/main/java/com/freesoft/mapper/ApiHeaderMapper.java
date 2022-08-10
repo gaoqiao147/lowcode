@@ -15,5 +15,9 @@ import java.util.List;
  * @since 2022-07-26
  */
 public interface ApiHeaderMapper extends BaseMapper<ApiHeaderDO> {
+    /**
+     *获取所有参数信息
+     * @return
+     */
     List<NewVO> getAllByApiIdNewVos();
 }
