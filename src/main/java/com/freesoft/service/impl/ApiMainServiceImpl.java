@@ -44,8 +44,9 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
     ApiDataSourceMapper apiDataSourceMapper;
     @Resource
     ApiMainGroupMapper apiMainGroupMapper;
+    //spring的@Lazy注解。在spring容器启动的时候，不会调用其getBean方法初始化实例。
     @Lazy
-    @Autowired
+    @Resource
     ApiUtil apiUtil;
 
     /**
@@ -148,7 +149,7 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
                 String sql = apiMain.getExecuteSql();
                 //针对该数据源执行sql脚本
                 if (null != paramsVOList) {
-                    result = execute(dataSourceNode, sql, paramsVOList,paramsVOList2, parameters);
+                    result = execute(dataSourceNode, sql, paramsVOList, paramsVOList2, parameters);
                 } else {
                     result = execute(dataSourceNode, sql);
                 }
@@ -174,22 +175,40 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
      * @param executeSql
      * @return java.lang.Object
      */
-    private Object execute(DataSourceNode dataSourceNode, String executeSql, List<ParamsVO> paramsVOList,List<ParamsVO> paramsVOList2, Map<String, Object> parameters) throws SQLException {
-        Connection connection = dataSourceNode.getDataSource().getConnection();
-        PreparedStatement ps = connection.prepareStatement(executeSql);
-//          占位符个数不确定，所以不能直接.所以需要对是否有占位符有几个进行判断
-//          如果有拼接占位符号？，则在循环中对占位符进行赋值
-        for (int i = 0; i < parameters.size(); i++) {
-            ps.setInt(i + 1, (Integer) parameters.get(paramsVOList.get(i).getParams()));
-        }
-        ResultSet rs = ps.executeQuery();
-        Map<String,Object> map = new HashMap<>();
-        //用于循环得到list2数组的值
-        int i = 0;
-        while (rs.next() ) {
-            map.put(paramsVOList2.get(i).getParams(),rs.getString(paramsVOList2.get(i).getParams()));
-            map.put(paramsVOList2.get(i+1).getParams(),rs.getString(paramsVOList2.get(i+1).getParams()));
-            i++;
+    private Object execute(DataSourceNode dataSourceNode, String executeSql, List<ParamsVO> paramsVOList, List<ParamsVO> paramsVOList2, Map<String, Object> parameters) throws SQLException {
+        Connection connection = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Map<String, Object> map = new HashMap<>();
+        try {
+            connection = dataSourceNode.getDataSource().getConnection();
+            ps = connection.prepareStatement(executeSql);
+            //占位符个数不确定，所以不能直接.所以需要对是否有占位符有几个进行判断
+            //如果有拼接占位符号？，则在循环中对占位符进行赋值
+            for (int i = 0; i < parameters.size(); i++) {
+                ps.setInt(i + 1, (Integer) parameters.get(paramsVOList.get(i).getParams()));
+            }
+            rs = ps.executeQuery();
+            //用于循环得到list2数组的值
+            int i = 0;
+            while (rs.next()) {
+                for (int j = 0; j < paramsVOList2.size(); j++) {
+                    map.put(paramsVOList2.get(j).getParams(), rs.getString(paramsVOList2.get(j).getParams()));
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            //ResultSet，PreparedStatement，Connection对象，使用完之后，调用close方法关闭资源
+            if (null != rs) {
+                rs.close();
+            }
+            if (null != ps) {
+                ps.close();
+            }
+            if (null != connection) {
+                connection.close();
+            }
         }
         return map;
     }
