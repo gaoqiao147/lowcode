@@ -7,22 +7,20 @@ import com.freesoft.service.ApiMainService;
 import com.freesoft.utils.ApiUtil;
 import com.freesoft.utils.DataSourceNode;
 import com.freesoft.utils.DataSourceUtil;
-import com.freesoft.vo.DataTypeVO;
 import com.freesoft.vo.ParamsVO;
 import com.freesoft.vo.RequestParamsVO;
 import com.freesoft.vo.RequestUriVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 /**
  * <p>
