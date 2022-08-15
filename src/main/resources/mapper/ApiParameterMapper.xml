@@ -41,7 +41,7 @@
         from api_params
         where api_id = #{apiId}
     </select>
-    <select id="paramsDataTypeList" resultType="com.freesoft.vo.ParamsVO">
+    <select id="paramsDataTypeList" resultType="com.freesoft.vo.DataTypeVO">
         select data_type
         from api_params
         where api_id = #{apiId}

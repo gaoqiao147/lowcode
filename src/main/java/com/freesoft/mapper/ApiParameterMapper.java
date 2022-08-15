@@ -3,6 +3,7 @@ package com.freesoft.mapper;
 import com.freesoft.model.ApiParameterDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.freesoft.model.ApiParams;
+import com.freesoft.vo.DataTypeVO;
 import com.freesoft.vo.ParamsVO;
 
 import java.util.List;
@@ -49,5 +50,5 @@ public interface ApiParameterMapper extends BaseMapper<ApiParameterDO> {
      * @param apiId
      * @return
      */
-    List<ParamsVO> paramsDataTypeList(Integer apiId);
+    List<DataTypeVO> paramsDataTypeList(Integer apiId);
 }

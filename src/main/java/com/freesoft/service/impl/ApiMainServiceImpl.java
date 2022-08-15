@@ -7,6 +7,7 @@ import com.freesoft.service.ApiMainService;
 import com.freesoft.utils.ApiUtil;
 import com.freesoft.utils.DataSourceNode;
 import com.freesoft.utils.DataSourceUtil;
+import com.freesoft.vo.DataTypeVO;
 import com.freesoft.vo.ParamsVO;
 import com.freesoft.vo.RequestParamsVO;
 import com.freesoft.vo.RequestUriVO;
@@ -136,18 +137,20 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
             if ("0".equals(apiMain.getEnable())) {
                 //启用数据源 通过groupId查询分组信息
                 ApiMainGroupDO apiMainGroupDO = apiMainGroupMapper.selectById(apiMain.getId());
+
                 ApiGroupDO apiGroup = apiGroupMapper.selectById(apiMainGroupDO.getGroupId());
                 //通过分组信息获取数据源
                 DataSourceNode dataSourceNode = queryDataSource(apiGroup.getDataSourceId());
-                //获取参数信息（要输入的参数，用户填的信息）
+                //获取参数信息（要输入的参数，用户填的信息）＋ 参数类型
                 List<ParamsVO> paramsVOList = apiParameterMapper.paramsList(apiMain.getId());
+                List<DataTypeVO> paramDataType = apiParameterMapper.paramsDataTypeList(apiMain.getId());
                 //用户要输出的参数
                 List<ParamsVO> paramsVOList2 = apiParameterMapper.paramsList2(apiMain.getId());
                 //参数替换sql脚本
                 String sql = apiMain.getExecuteSql();
                 //针对该数据源执行sql脚本
                 if (null != paramsVOList) {
-                    result = execute(dataSourceNode, sql, paramsVOList, paramsVOList2, parameters);
+                    result = execute(dataSourceNode, sql, paramsVOList, paramsVOList2,paramDataType, parameters);
                 } else {
                     result = execute(dataSourceNode, sql);
                 }
@@ -173,7 +176,7 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
      * @param executeSql
      * @return java.lang.Object
      */
-    private Object execute(DataSourceNode dataSourceNode, String executeSql, List<ParamsVO> paramsVOList, List<ParamsVO> paramsVOList2, Map<String, Object> parameters) throws SQLException {
+    private Object execute(DataSourceNode dataSourceNode, String executeSql, List<ParamsVO> paramsVOList, List<ParamsVO> paramsVOList2, List<DataTypeVO> paramDataType,Map<String, Object> parameters) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -184,7 +187,13 @@ public class ApiMainServiceImpl extends ServiceImpl<ApiMainMapper, ApiMainDO> im
             //占位符个数不确定，所以不能直接.所以需要对是否有占位符有几个进行判断
             //如果有拼接占位符号？，则在循环中对占位符进行赋值
             for (int i = 0; i < parameters.size(); i++) {
-                ps.setInt(i + 1, (Integer) parameters.get(paramsVOList.get(i).getParams()));
+                //要根据参数的数据类型选择set的类型
+                if(paramDataType.get(i).getParamsDataType().equals("int")){
+                    ps.setInt(i + 1, (Integer) parameters.get(paramsVOList.get(i).getParams()));
+                }
+                if(paramDataType.get(i).getParamsDataType().equals("String")) {
+                    ps.setString(i + 1, (String) parameters.get(paramsVOList.get(i).getParams()));
+                }
             }
             rs = ps.executeQuery();
             //用于循环得到list2数组的值

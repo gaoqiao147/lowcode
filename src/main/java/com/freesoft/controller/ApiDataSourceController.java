@@ -2,10 +2,11 @@ package com.freesoft.controller;
 
 import com.freesoft.common.method.GenPathMethods;
 import com.freesoft.common.method.SplicingSqlMethods;
-import com.freesoft.model.ApiMainDO;
-import com.freesoft.model.ApiParameterDO;
-import com.freesoft.model.ApiParams;
+import com.freesoft.mapper.ApiGroupMapper;
+import com.freesoft.mapper.ApiMainGroupMapper;
+import com.freesoft.model.*;
 import com.freesoft.service.ApiDataSourceService;
+import com.freesoft.service.ApiMainGroupService;
 import com.freesoft.service.ApiMainService;
 import com.freesoft.vo.*;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,10 @@ public class ApiDataSourceController {
     SplicingSqlMethods splicingSqlMethods;
     @Resource
     GenPathMethods genPathMethods;
+    @Resource
+    ApiMainGroupMapper apiMainGroupMapper;
+    @Resource
+    ApiGroupMapper apiGroupMapper;
 
     @GetMapping("/get-table-name")
     public List<TableNameVO> getTableName() {
@@ -63,7 +68,8 @@ public class ApiDataSourceController {
         List<DataTypeVO> dataTypeListOut = generateVO.getOutputDataType();
 
         //判断参数是否为空
-        //循环添加参数入listIn数组
+        //循环添加参数入listIn数组（用户要输出的参数）
+        //api_parameters表
         List<ApiParameterDO> listIn = new ArrayList<>();
         if (!dataTypeListIn.isEmpty() && !paramsVOListIn.isEmpty()) {
             for (int i = 0; i < paramsVOListIn.size(); i++) {
@@ -74,7 +80,8 @@ public class ApiDataSourceController {
                 listIn.add(apiParameterDO);
             }
         }
-        //循环添加参数入list数组
+        //循环添加参数入list数组（用户要输入的参数）
+        //api_params表
         List<ApiParams> listOut = new ArrayList<>();
         if (!dataTypeListOut.isEmpty() && !paramsVOListOut.isEmpty()) {
             for (int i = 0; i < paramsVOListOut.size(); i++) {
@@ -85,12 +92,32 @@ public class ApiDataSourceController {
                 listOut.add(apiParams);
             }
         }
+        //添加api_main_group表，新建关联表数据
+        //随机生成groupId
+        int groupId = new Random(10000).nextInt();
+        ApiMainGroupDO apiMainGroup = new ApiMainGroupDO()
+                .setApiId(str_id)
+                .setGroupId(String.valueOf(groupId))
+                //0创建，1引用
+                .setQuote("0");
+        apiMainGroupMapper.insert(apiMainGroup);
 
+        //添加api_group表
+        //获取数据源信息(由前端传入数据源id)
+        ApiGroupDO apiGroup = new ApiGroupDO()
+                .setId(String.valueOf(groupId))
+                .setDataSourceId(generateVO.getDataSourceId());
+        apiGroupMapper.insert(apiGroup);
+
+        //添加接口的api_main表
         ApiMainDO apiMain = new ApiMainDO()
                 .setId(Integer.valueOf(str_id))
                 .setExecuteSql(splicingSqlMethods.splicingSql(generateVO).toString())
                 .setMethod(generateVO.getMethod())
                 .setPath(path)
+                //设置该接口可用
+                .setEnable("0")
+                .setState("0")
                 .setParameters(listIn)
                 .setParametersOut(listOut);
         int res = apiMainService.saveApi(apiMain);

@@ -12,6 +12,10 @@ import java.util.Map;
 @Data
 public class GenerateVO {
     /**
+     * 传入数据源的id，创建接口时使用
+     */
+    private String dataSourceId;
+    /**
      * 表名
      */
     private String tableName;

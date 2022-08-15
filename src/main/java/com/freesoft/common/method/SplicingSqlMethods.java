@@ -64,8 +64,8 @@ public class SplicingSqlMethods {
         for (int i = 0; i < outputParams.size(); i++) {
             params += outputParams.get(i).getParams() + question + " and ";
         }
-        //删除字符串param_type最后的and和？
-        params = params.substring(0, params.length() - 7);
+        //删除字符串param_type最后的and
+        params = params.substring(0, params.length() - 5);
         return params;
     }
 
